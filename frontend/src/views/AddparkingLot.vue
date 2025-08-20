@@ -99,56 +99,53 @@
           </div>
         </div>
 
-        <!-- Price and Spots Row -->
-        <div class="form-row">
-          <!-- Price Input -->
-          <div class="form-group">
-            <label for="price" class="form-label">
-              <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
-              Price per Hour
-            </label>
-            <div class="input-wrapper">
-              <input 
-                v-model="lot.price" 
-                type="number" 
-                id="price"
-                class="form-input"
-                placeholder="₹ 0.00"
-                min="0"
-                step="0.01"
-                required
-                :disabled="isSubmitting"
-              />
-              <div class="input-border"></div>
-            </div>
+        <!-- Price Input -->
+        <div class="form-group">
+          <label for="price" class="form-label">
+            <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Price per Hour
+          </label>
+          <div class="input-wrapper">
+            <input 
+              v-model="lot.price" 
+              type="number" 
+              id="price"
+              class="form-input"
+              placeholder="₹ 0.00"
+              min="0"
+              step="0.01"
+              required
+              :disabled="isSubmitting"
+            />
+            <div class="input-border"></div>
           </div>
+        </div>
 
-          <!-- Number of Spots Input -->
-          <div class="form-group">
-            <label for="maxSpots" class="form-label">
-              <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-              Total Spots
-            </label>
-            <div class="input-wrapper">
-              <input 
-                v-model="lot.number_of_spots" 
-                type="number" 
-                id="maxSpots"
-                class="form-input"
-                placeholder="Number of spots"
-                min="1"
-                required
-                :disabled="isSubmitting"
-              />
-              <div class="input-border"></div>
-            </div>
+        <!-- Number of Spots Input -->
+        <div class="form-group">
+          <label for="maxSpots" class="form-label">
+            <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            Total Spots
+          </label>
+          <div class="input-wrapper">
+            <input 
+              v-model="lot.number_of_spots" 
+              type="number" 
+              id="maxSpots"
+              class="form-input"
+              placeholder="Number of spots"
+              min="1"
+              required
+              :disabled="isSubmitting"
+            />
+            <div class="input-border"></div>
           </div>
         </div>
 
@@ -466,26 +463,11 @@ export default {
   position: relative;
 }
 
-.form-row {
+  .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    width: 100%; 
-  }
-  .form-row .form-group {
-    min-width: 0; /* This prevents overflow issues */
-  }
-
-  @media (max-width: 768px) {
-    .form-row {
-      grid-template-columns: 1fr; /* Stack on smaller screens */
-      gap: 15px;
-    }
-    
-    /* Ensure form groups take full width when stacked */
-    .form-row .form-group {
-      width: 100%;
-    }
+    margin-bottom: 25px;
   }
 
 .form-label {
@@ -984,7 +966,7 @@ export default {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
   .add-lot-container {
     padding: 40px 25px;
     margin: 15px;
@@ -999,7 +981,6 @@ export default {
     width: 50px;
     height: 50px;
   }
-  
   
   .button-group {
     flex-direction: column;
@@ -1177,8 +1158,6 @@ export default {
 .form-group:nth-child(2) { animation-delay: 0.2s; }
 .form-group:nth-child(3) { animation-delay: 0.3s; }
 .form-group:nth-child(4) { animation-delay: 0.4s; }
-
-/* Enhanced gradient text effect */
 
 
 @keyframes textShimmer {
