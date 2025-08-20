@@ -434,8 +434,6 @@ def get_recent_reservations():
     return jsonify({'recent': result}), 200
 
 
-
-
 @app.route('/api/release-spot', methods=['POST'])
 def release_spot():
     data = request.get_json()
@@ -448,6 +446,11 @@ def release_spot():
 
     if not all([lot_id, spot_id, user_id]):
         return jsonify({'message': 'Missing lot_id, spot_id, or user_id'}), 400
+
+    # Validate ParkingLot exists
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        return jsonify({'message': 'Parking lot not found'}), 404
 
     # Find active reservation
     reservation = Reservation.query.filter_by(
@@ -468,26 +471,30 @@ def release_spot():
     parking_time = reservation.parking_timestamp
     duration_hours = (release_time - parking_time).total_seconds() / 3600
 
-    # Optionally, fetch price from Spot model if not already in reservation
-    spot = ParkingLot.query.filter_by(id=lot_id).first()
-    price_per_hour = spot.price if spot else 10  # fallback price
-
+    price_per_hour = lot.price if hasattr(lot, "price") else 10  # fallback price
     total_cost = round(duration_hours * price_per_hour, 2)
+
     reservation.total_cost = total_cost
     reservation.parking_cost = total_cost
     reservation.reservation_status = 'Parked Out'
-    available_spots = lot_id.number_of_spots - Reservation.query.filter_by(lot_id=lot_id.id, reservation_status='Active').count()
+
+    # Calculate available spots properly
+    active_reservations = Reservation.query.filter_by(
+        lot_id=lot.id, reservation_status='Active'
+    ).count()
+    available_spots = lot.number_of_spots - active_reservations
 
     db.session.commit()
 
     return jsonify({
         'message': 'Spot released successfully',
-        'lot_id': lot_id,
+        'lot_id': lot.id,
         'spot_id': spot_id,
         'user_id': user_id,
         'parking_timestamp': parking_time,
         'release_timestamp': release_time,
-        'total_cost': total_cost
+        'total_cost': total_cost,
+        'available_spots': available_spots
     }), 200
 
 @app.route('/api/user-summary')

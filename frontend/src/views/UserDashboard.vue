@@ -60,7 +60,7 @@
       <div class="welcome-section">
         <div class="welcome-content">
           <h1 class="welcome-title">
-            <span class="gradient-text">Welcome back, {{ username }}! 🚗</span>
+            <span class="gradient-text">Welcome back, {{username }}! 🚗</span>
           </h1>
           <p class="welcome-subtitle">Manage your parking reservations with ease</p>
         </div>
@@ -541,6 +541,7 @@ export default {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  background-color: black;
 }
 
 .nav-links {
@@ -623,17 +624,10 @@ export default {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, 
-    var(--white) 0%, 
-    rgba(255, 255, 255, 0.9) 30%, 
-    var(--white) 60%, 
-    rgba(255, 255, 255, 0.8) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-  animation: textGlow 3s ease-in-out infinite;
+  color: #000;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
 
 @keyframes textGlow {
   0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)); }
@@ -641,7 +635,7 @@ export default {
 }
 
 .welcome-subtitle {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgb(0, 0, 0);
   font-size: 1.2em;
   font-weight: 500;
 }

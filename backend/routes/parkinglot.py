@@ -10,8 +10,6 @@ class ParkingLotResource(Resource):
     def get(self):
         q = request.args.get('query', '').strip()
         pc = request.args.get('pincode', '').strip()
-
-
         query = ParkingLot.query
         if q:
             query = query.filter(
