@@ -75,7 +75,7 @@
               </svg>
             </div>
             <div class="stat-content">
-              <div class="stat-number">{{ recentReservations.length }}</div>
+              <div class="stat-number">{{ activeReservationsCount }}</div>
               <div class="stat-label">Active Reservations</div>
             </div>
           </div>
@@ -96,7 +96,7 @@
             </div>
             Recent Reservations
           </h3>
-          <div class="section-badge">{{ recentReservations.length }} Active</div>
+          <div class="section-badge">{{ recentReservations.length }} Recent</div>
         </div>
         
         <div class="table-container">
@@ -137,15 +137,15 @@
                 </td>
                 <td>{{ res.parking_timestamp }}</td>
                 <td>
-                  <span :class="['status-badge', res.reservation_status === 'Release' ? 'status-active' : 'status-completed']">
-                    {{ res.reservation_status === 'Release' ? 'Active' : 'Completed' }}
-                  </span>
+                   <span :class="['status-badge', res.is_active ? 'status-active' : 'status-completed']">
+    {{ res.is_active ? 'Active' : 'Completed' }}
+  </span>
                 </td>
                 <td>
                   <button
-                    v-if="res.reservation_status === 'Release'"
-                    @click="goToReleasePage(res.lot_id, res.spot_id)"
-                    class="btn btn-release"
+                     v-if="res.is_active"
+    @click="goToReleasePage(res.lot_id, res.spot_id)"
+    class="btn btn-release"
                   >
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M18 6L6 18M6 6l12 12"/>
@@ -317,7 +317,8 @@ export default {
       results: null,
       username: '',
       token: localStorage.getItem('auth_token') || '',
-      recentReservations: []
+      recentReservations: [],
+      activeReservationsCount: 0
     };
   },
   mounted() {
@@ -334,11 +335,13 @@ export default {
       }
     }
     this.fetchRecentReservations(); // fetch anyway
+    this.fetchActiveReservationsCount();
 
     // If user just returned from releasing
     if (this.$route.query.refresh === 'true') {
       console.log("🔁 Refreshing dashboard after release...");
       this.fetchRecentReservations();
+      this.fetchActiveReservationsCount();
       this.$router.replace({ query: {} });  // Clears URL query after reload
     }
   },
@@ -346,6 +349,41 @@ export default {
     logout() {
       localStorage.removeItem('user');
       this.$router.push({ name: 'Login' });
+    },
+    
+    async fetchActiveReservationsCount() {
+      const config = { 
+        headers: { 
+          'Authorization': this.token,
+          'Content-Type': 'application/json'
+        } 
+      };
+      
+      try {
+        console.log("Fetching active reservations count...");
+        const resp = await axios.get(
+          `http://localhost:5000/api/active-reservations-count`, 
+          config
+        );
+        
+        console.log('Active count response:', resp.data);
+        
+        if (resp.data && typeof resp.data.active_count === 'number') {
+          this.activeReservationsCount = resp.data.active_count;
+        } else {
+          // Fallback: count active reservations from recent list
+          this.activeReservationsCount = this.recentReservations.filter(
+            res => res.is_active
+          ).length;
+        }
+      }catch (err) {
+        console.error('Error loading active reservations count:', err);
+        
+        // Fallback: count active reservations from recent list
+        this.activeReservationsCount = this.recentReservations.filter(
+          res => !res.leaving_timestamp && res.reservation_status !== 'Parked Out'
+        ).length;
+      }
     },
 
     async fetchRecentReservations() {

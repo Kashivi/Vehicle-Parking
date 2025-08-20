@@ -155,6 +155,7 @@ export default {
       vehicle_number: '',
       isLoading: true,
       isSubmitting: false,
+      spot_number: null,
     };
   },
   async created() {
@@ -174,8 +175,9 @@ export default {
       
       const data = await response.json();
       
-      if (response.ok && data.spot_number) {
-        this.spot_id = data.spot_number;
+      if (response.ok && data.spot_id) {
+        this.spot_id = data.spot_id;
+        this.spot_number = data.spot_number;
       } else {
         this.showAlert('No available spot found in the selected lot.', 'warning');
         this.$router.push('/user-dashboard');
@@ -202,7 +204,7 @@ export default {
           },
           body: JSON.stringify({
             lot_id: this.lot_id,
-            spot_id: this.spot_id,
+            spot_id: this.spot_number,
             user_id: this.user_id,
             vehicle_number: this.vehicle_number
           })

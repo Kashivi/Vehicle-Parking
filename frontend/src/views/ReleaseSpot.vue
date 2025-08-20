@@ -262,11 +262,26 @@ export default {
         this.$router.push('/user-dashboard');
       }
     },
-    submitRelease() {
-      this.releaseSpot();
-    },
+    async submitRelease() {
+    const releaseBtn = document.querySelector('.btn-release');
+    if (releaseBtn) {
+      releaseBtn.disabled = true;
+      const btnContent = releaseBtn.querySelector('.btn-content');
+      if (btnContent) {
+        btnContent.textContent = 'Releasing...';
+      }
+    }
+    
+    await this.releaseSpot();
+  },
     formatDateTime(timestamp) {
-      const date = new Date(timestamp);
+      if (!timestamp) return 'N/A';
+       let date;
+      if (timestamp.endsWith('Z')) {
+        date = new Date(timestamp);
+      } else {
+        date = new Date(timestamp + 'Z');
+      }
       return date.toLocaleString();
     },
     goToDashboard() {

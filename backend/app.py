@@ -418,7 +418,7 @@ def book_spot():
 def get_recent_reservations():
     print('user email is: ', current_user.email)
     user_id = current_user.id
-    reservations = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.parking_timestamp.desc()).limit(3).all()
+    reservations = Reservation.query.filter_by(user_id=user_id ).order_by(Reservation.parking_timestamp.desc()).limit(11).all()
     result = []
     for res in reservations:
         print(' RES:', res.user_id, res.parking_timestamp)
@@ -428,11 +428,28 @@ def get_recent_reservations():
             'location': res.lot.prime_location_name,
             'vehicle_number': res.vehicle_number,
             'parking_timestamp': res.parking_timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'reservation_status': res.reservation_status
+            'reservation_status': res.reservation_status,
+             'reservation_status': res.reservation_status,
+            'is_active': res.leaving_timestamp is None
         })
 
     return jsonify({'recent': result}), 200
 
+@app.route('/api/active-reservations-count', methods=['GET'])
+@auth_required('token')
+@roles_accepted('user', 'admin')
+def get_active_reservations_count():
+    user_id = current_user.id
+    
+    # Count only active reservations
+    active_count = Reservation.query.filter_by(
+        user_id=user_id, 
+        leaving_timestamp=None
+    ).filter(
+        Reservation.reservation_status != 'Parked Out'
+    ).count()
+    
+    return jsonify({'active_count': active_count}), 200
 
 @app.route('/api/release-spot', methods=['POST'])
 def release_spot():
@@ -478,6 +495,10 @@ def release_spot():
     reservation.parking_cost = total_cost
     reservation.reservation_status = 'Parked Out'
 
+    spot = ParkingSpot.query.get(spot_id)
+    if spot:
+        spot.status = 'A'
+
     # Calculate available spots properly
     active_reservations = Reservation.query.filter_by(
         lot_id=lot.id, reservation_status='Active'
@@ -491,8 +512,8 @@ def release_spot():
         'lot_id': lot.id,
         'spot_id': spot_id,
         'user_id': user_id,
-        'parking_timestamp': parking_time,
-        'release_timestamp': release_time,
+        'parking_timestamp': parking_time.isoformat() + 'Z',
+        'release_timestamp': release_time.isoformat() + 'Z',
         'total_cost': total_cost,
         'available_spots': available_spots
     }), 200

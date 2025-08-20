@@ -388,12 +388,13 @@ export default {
 }
 
 .brand-text {
-  font-size: 1.5em;
+  font-size: 1.8em;
   font-weight: 800;
   background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  background-color: black;
 }
 
 .nav-links {
@@ -490,16 +491,8 @@ export default {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, 
-    var(--primary-blue) 0%, 
-    var(--accent-purple) 30%, 
-    var(--pink-accent) 60%, 
-    var(--cyan-accent) 100%);
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: textShimmer 6s ease-in-out infinite;
+  color: #000;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes textShimmer {
