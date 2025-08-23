@@ -227,7 +227,9 @@ export default {
         });
         const json = await res.json();
         if (json.status === 'ok') {
-          this.parkingLots = this.parkingLots.filter(l => l.id !== lotId);
+            this.parkingLots = this.parkingLots.filter(lot => lot.id !== lotId);
+            await this.fetchLots();
+            alert('Parking lot deleted successfully!');
         } else {
           alert(`Delete failed: ${json.message}`);
         }
@@ -256,7 +258,7 @@ export default {
     },
 
     getSpotStatus(lot, n) {
-      const spot = lot.spots.find(s => parseInt(s.id) === n);
+      const spot = lot.spots.find(s => s.spot_number === `Spot-${n}`);
       return spot ? spot.status : 'A';  // default to 'A' if not found
     },
     

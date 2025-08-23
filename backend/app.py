@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager
 from flask_security import Security, auth_required, roles_accepted, current_user
 from flask_security.utils import hash_password, verify_password
-from werkzeug.security import check_password_hash
 from flask_restful import Api
 from datetime import datetime
 import os
@@ -33,13 +32,9 @@ def create_app():
     from config import localDev
     app.config.from_object(localDev)
     db.init_app(app)
-    jwt = JWTManager(app)
-    migrate = Migrate(app, db)
 
     init_api = Api(app, prefix='/api')
     CORS(app, supports_credentials=True)
-    
-    # Allow preflight CORS requests
     cache.init_app(app)
 
     from mailing import mail
@@ -76,24 +71,6 @@ api.add_resource(UserInfoByIdResource, '/search/userinfo/<int:user_id>')
 
 from flask import jsonify
 import tasks
-
-
-@app.route('/trigger_daily_reminders', methods=['GET'])
-def trigger_daily_reminders():
-    """
-    Enqueue the daily reminder task immediately (for manual testing).
-    Responds with a task ID.
-    """
-    result = tasks.send_daily_email_reminders_and_new_lots.delay()
-    return jsonify({"status": "queued", "task_id": result.id}), 202
-
-
-@app.route('/trigger_monthly_report', methods=['GET'])
-def trigger_monthly_report():
-    task = tasks.send_monthly_report.delay()
-    return jsonify({"status": "queued", "task_id": task.id}), 202
-
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -174,17 +151,6 @@ def login():
         'username': user.username,
         'email': user.email
     }), 200
-
-@app.route('/test', methods=['GET'])
-@auth_required('token')
-# @roles_required('user', 'admin') # AND
-@roles_accepted('user', 'admin') # OR
-def test():
-    # found_user = User.query.filter_by(id=1).first()
-    # print(found_user.email)
-    return {'status': 'ok', 'message': 'Test successful', 'email': current_user.username}, 200
-
-
 
 @app.route('/userinfo', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @auth_required('token')
@@ -333,13 +299,18 @@ def parking_lot():
         lot_id = data.get('id')
         if not lot_id:
             return {'status': 'error', 'message': 'Parking lot ID is required'}, 400
+        
+        lot = ParkingLot.query.get(spot.lot_id)
+        db.session.delete(lot)
+        if lot:
+            lot.number_of_spots = max(lot.number_of_spots - 1, 0)
+            lot.available_spots = sum(1 for s in lot.spots if s.status == 'A')  
 
-        lot = ParkingLot.query.get(lot_id)
         if not lot:
             return {'status': 'error', 'message': 'Parking lot not found'}, 404
-
-        db.session.delete(lot)
         db.session.commit()
+        response = jsonify({'status': 'ok', 'message': 'Parking lot deleted', 'id': lot.id})
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:8080')
         return {'status': 'ok', 'message': 'Parking lot deleted', 'id': lot.id}, 200
 
 
@@ -481,7 +452,7 @@ def release_spot():
         return jsonify({'message': 'Active reservation not found'}), 404
 
     # Mark release timestamp
-    release_time = datetime.now()
+    release_time = datetime.utcnow()
     reservation.leaving_timestamp = release_time
 
     # Calculate duration and cost

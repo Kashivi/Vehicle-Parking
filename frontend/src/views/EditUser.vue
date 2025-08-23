@@ -167,7 +167,6 @@ export default {
     this.user = u
     this.form.email = u.email
     this.form.phone_number = u.phone_number
-    // leave form.password blank for security
   },
   methods: {
     async updateUser() {

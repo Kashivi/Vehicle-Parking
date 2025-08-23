@@ -135,7 +135,7 @@
                     {{ res.vehicle_number }}
                   </div>
                 </td>
-                <td>{{ res.parking_timestamp }}</td>
+                <td>{{ formatDateTime(res.parking_timestamp) }}</td>
                 <td>
                    <span :class="['status-badge', res.is_active ? 'status-active' : 'status-completed']">
     {{ res.is_active ? 'Active' : 'Completed' }}
@@ -350,6 +350,16 @@ export default {
       localStorage.removeItem('user');
       this.$router.push({ name: 'Login' });
     },
+    formatDateTime(timestamp) {
+    if (!timestamp) return 'N/A';
+    let date;
+    if (timestamp.endsWith('Z')) {
+      date = new Date(timestamp);
+    } else {
+      date = new Date(timestamp + 'Z');
+    }
+    return date.toLocaleString();
+  },
     
     async fetchActiveReservationsCount() {
       const config = { 

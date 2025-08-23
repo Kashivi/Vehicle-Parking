@@ -32,7 +32,7 @@
         <div class="feature-card">
           <div class="feature-icon">🚗</div>
           <h3>Smart Allocation</h3>
-          <p>AI-powered space optimization</p>
+          <p>Space optimization</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">📱</div>
@@ -70,22 +70,6 @@
             Register
           </span>
         </router-link>
-      </div>
-
-      <!-- Stats Section -->
-      <div class="stats-section">
-        <div class="stat-item">
-          <div class="stat-number">99.9%</div>
-          <div class="stat-label">Uptime</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">1000+</div>
-          <div class="stat-label">Parking Spots</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">Support</div>
-        </div>
       </div>
     </div>
   </div>
@@ -204,12 +188,10 @@ export default {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue), var(--accent-orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s ease-in-out infinite;
+  color: #000;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
 
 @keyframes shimmer {
   0%, 100% { background-position: 0% 50%; }

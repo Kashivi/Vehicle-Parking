@@ -2,10 +2,7 @@
   <div v-if="isAdmin" class="user-stats">
     <!-- Background Pattern -->
     <div class="bg-pattern"></div>
-    
-    <!-- Main Container -->
-    
-      <!-- Header Section -->
+    ->
       <!-- Navigation Section -->
       <nav class="main-nav">
       <div class="nav-container">
