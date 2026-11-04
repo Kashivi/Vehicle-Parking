@@ -2,7 +2,7 @@
 
 A full-stack web app for managing vehicle parking lots. Admins create and manage parking lots and spots and view analytics. Users register, book a free spot in a lot, release it when leaving (cost is calculated automatically) and view their own parking history and spending charts. Background jobs send daily reminders and a monthly spending report by email.
 
-**2. Features**
+**Features**
 
 Admin
 
